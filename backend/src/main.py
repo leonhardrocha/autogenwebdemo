@@ -1,14 +1,15 @@
+from logging import config
 from fastapi import FastAPI, WebSocket, Request
 from fastapi.responses import HTMLResponse
 import uuid
-from autogen_chat import AutogenChat
+from autogen_group_chat import AutogenChat
 import asyncio
 import uvicorn
 from dotenv import load_dotenv, find_dotenv
 import openai
 import os
 
-_ = load_dotenv(find_dotenv()) # read local .env file
+_ = load_dotenv(find_dotenv())  # read local .env file
 openai.api_key = os.environ['OPENAI_API_KEY']
 # openai.log='debug'
 
@@ -25,7 +26,7 @@ class ConnectionManager:
         self.active_connections.append(autogen_chat)
 
     async def disconnect(self, autogen_chat: AutogenChat):
-        autogen_chat.client_receive_queue.put_nowait("DO_FINISH")
+        autogen_chat.client_receive_queue.put("DO_FINISH")
         print(f"autogen_chat {autogen_chat.chat_id} disconnected")
         self.active_connections.remove(autogen_chat)
 
@@ -71,4 +72,4 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str):
             pass
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)

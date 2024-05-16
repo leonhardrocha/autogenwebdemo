@@ -1,0 +1,38 @@
+services:
+  frontend:
+    image: autogen-webdemo/frontend
+    build:
+      context: react-frontend
+      dockerfile: ./Dockerfile
+      args:
+        - DEV_MODE=true
+    environment:
+      NODE_ENV: development
+      BUILDKIT_PROGRESS: plain
+      
+    # volumes:
+    #   - .react-frontend/:/code/react-frontend/src
+    ports:
+      - 3000:3000 #open-webui
+      - 5173:5173 #autogenweb
+      - 9229:9229 #????
+    command: ["npm", "run", "dev"]
+
+  backend:
+    image: autogen-webdemo/backend
+    build:
+      context: backend
+      dockerfile: ./Dockerfile
+      args:
+        - DEV_MODE=true
+    environment:
+      NODE_ENV: development
+      BUILDKIT_PROGRESS: plain
+
+    # volumes:
+    #  - .backend/:/code/backend/src    
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn backend.src\\main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - 8000:8000 # webserver
+      - 5678:5678 # pydebug
+      - 4000:4000 # litellm

@@ -1,0 +1,32 @@
+services:
+  frontend:
+    image: autogen-webdemo/frontend
+    build:
+      context: ./react-frontend
+      dockerfile: ./Dockerfile
+      args:
+        - DEV_MODE=false
+    environment:
+      NODE_ENV: production
+    # volumes:
+    #  - .src:/web
+    ports:
+      - 3000:3000
+      - 5173:5173
+    command: ["npm", "run", "dev"] # TODO: change dev to productuon profile
+
+  backend:
+    image: autogen-webdemo/backend
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+      args:
+        - DEV_MODE=false   
+    environment:      
+      NODE_ENV: production
+    # volumes:
+    #   - .:/app
+    ports:
+      - 8000:8000
+      - 5678:5678
+      - 4000:4000
